@@ -4,6 +4,7 @@
 #include "Matrix4x4.h"
 #include "Vector3.h"
 #include"math.h"
+#include"cassert"
 
 
 Matrix4x4 Add(const Matrix4x4& m1, const Matrix4x4& m2) {
@@ -86,7 +87,7 @@ Matrix4x4 Transpose(const Matrix4x4& m) {
 	return result;
 }
 
-Matrix4x4 MakeIdentity4X4() {
+Matrix4x4 MakeIdentityMatrix() {
 	Matrix4x4 result;
 
 	result.m[0][0] = 1.0f;
@@ -105,6 +106,44 @@ Matrix4x4 MakeIdentity4X4() {
 	result.m[3][1] = 0.0f;
 	result.m[3][2] = 0.0f;
 	result.m[3][3] = 1.0f;
+
+	return result;
+}
+
+Matrix4x4 MakeTranslateMatrix(const Vector3& translate) {
+	Matrix4x4 result = MakeIdentityMatrix();
+
+	result.m[3][0] = translate.x;
+	result.m[3][1] = translate.y;
+	result.m[3][2] = translate.z;
+
+	return result;
+}
+
+Matrix4x4 MakeScaleMatrix(const Vector3& scale) {
+	Matrix4x4 result = MakeIdentityMatrix();
+
+	result.m[0][0] = scale.x;
+	result.m[1][1] = scale.y;
+	result.m[2][2] = scale.z;
+
+	return result;
+}
+
+Vector3 Transform(const Vector3& v, const Matrix4x4& m) {
+	Vector3 result;
+	float w;
+
+	result.x = m.m[0][0] * v.x + m.m[1][0] * v.y + m.m[2][0] * v.z + 1.0f * m.m[3][0];
+	result.y = m.m[0][1] * v.x + m.m[1][1] * v.y + m.m[2][1] * v.z + 1.0f * m.m[3][1];
+	result.z = m.m[0][2] * v.x + m.m[1][2] * v.y + m.m[2][2] * v.z + 1.0f * m.m[3][2];
+	w = m.m[0][3] * v.x + m.m[1][3] * v.y + m.m[2][3] * v.z + 1.0f * m.m[3][3];
+
+	assert(w != 0.0f);
+
+	result.x /= w;
+	result.y /= w;
+	result.z /= w;
 
 	return result;
 }
